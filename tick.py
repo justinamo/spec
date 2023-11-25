@@ -1,4 +1,5 @@
 import blpapi
+from dates import convert_from_utc
 
 class Tick_types:
     bid = "BID"
@@ -38,4 +39,6 @@ class Tick:
         size = singleton.getElementAsInteger(blpapi.Name("size"))
         exch_code = singleton.getElementAsString(blpapi.Name("exchangeCode"))
 
-        return Tick(time, tick_type, price, size, exch_code)
+        eastern_time = convert_from_utc(time)
+
+        return Tick(eastern_time, tick_type, price, size, exch_code)

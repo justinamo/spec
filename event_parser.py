@@ -1,6 +1,5 @@
 import blpapi
 from tick import Tick_types
-from dates import convert_from_utc
 from bbo import BBO
 
 tickData = blpapi.Name("tickData")
