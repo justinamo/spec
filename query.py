@@ -4,7 +4,7 @@ Requires a connection to the Bloomberg API.
 
 import blpapi
 from request import IntradayTickRequest
-from eventParser import extract_tick_data, construct_qrm
+from event_parser import extract_tick_data, construct_qrm
 from tick import Tick, Tick_types
 
 
