@@ -1,6 +1,7 @@
 import blpapi
 from tick import Tick_types
 from dates import convert_from_utc
+from bbo import BBO
 
 tickData = blpapi.Name("tickData")
 
@@ -49,6 +50,12 @@ def construct_qrm(ticks):
     for i in to_delete:
         del qr[i]
 
-    return qr
+    def construct_bbo(quote):
+        if "TRADE" in quote: 
+            return BBO("TRADE", quote)
+        else:
+            return BBO("SPREAD", quote)
+
+    return list(map(construct_bbo, qr))
 
             

@@ -28,5 +28,7 @@ tick_data = extract_tick_data(session)
 ticks = list(map(Tick.of_tickdata_singleton, tick_data))
 qrm = construct_qrm(ticks)
     
+for bbo in qrm: 
+    print(bbo)
 
 session.stop()
