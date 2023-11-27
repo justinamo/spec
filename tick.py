@@ -41,4 +41,7 @@ class Tick:
 
         eastern_time = convert_from_utc(time)
 
+        if tick_type == Tick_types.bid or tick_type == Tick_types.ask:
+            size *= 100
+
         return Tick(eastern_time, tick_type, price, size, exch_code)
