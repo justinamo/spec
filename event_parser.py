@@ -5,10 +5,12 @@ from bbo import BBO
 tickData = blpapi.Name("tickData")
 
 def extract_tick_data(session):
-    while session.tryNextEvent():
+    not_tick_data = True
+    while not_tick_data:
         event = session.nextEvent()
         for message in event:
             if message.hasElement(tickData):
+                not_tick_data = False
                 td = message.asElement().getElement(tickData)
                 return td.getElement(tickData)
 
