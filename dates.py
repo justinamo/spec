@@ -6,7 +6,7 @@ eastern = pytz.timezone("US/Eastern")
 utc = pytz.utc
 
 def convert_to_utc(dt):
-    eastern_time = eastern.localize(naive)
+    eastern_time = eastern.localize(dt)
     utc_time = eastern_time.astimezone(utc)
     return utc_time.strftime(date_format)
 
