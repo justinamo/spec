@@ -5,8 +5,7 @@ date_format = '%Y-%m-%dT%H:%M:%S'
 eastern = pytz.timezone("US/Eastern")
 utc = pytz.utc
 
-def convert_to_utc(year, month, day, hour, minute, second):
-    naive = datetime(year, month, day, hour, minute, second)
+def convert_to_utc(dt):
     eastern_time = eastern.localize(naive)
     utc_time = eastern_time.astimezone(utc)
     return utc_time.strftime(date_format)

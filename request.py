@@ -18,20 +18,16 @@ class IntradayTickRequest:
         self.request.set("includeTradeTime", True)
         self.request.set("includeNonPlottableEvents", True)
     
-    def set_start_time(self, year, month, day, hour, minute, second):
+    def set_start_time(self, dt):
         self.request.set(
             "startDateTime", 
-            convert_to_utc(
-                year, month, day, hour, minute, second
-            )
+            convert_to_utc(dt)
         )
 
-    def set_end_time(self, year, month, day, hour, minute, second):
+    def set_end_time(self, dt):
         self.request.set(
             "endDateTime", 
-            convert_to_utc(
-                year, month, day, hour, minute, second
-            )
+            convert_to_utc(dt)
         )
     
     def send(self, session):
