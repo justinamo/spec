@@ -40,16 +40,16 @@ class Backtester:
         size = self.open_order.size
         price = self.open_order.price
         direction = self.open_order.direction
-        if direction == Direction.buy and quote.ask_size is not None:
-            ask_size = quote.ask_size
-            ask_price = quote.ask_price
+        if direction == Direction.buy and quote.get_ask_size() is not None:
+            ask_size = quote.get_ask_size()
+            ask_price = quote.get_ask_price()
             if price >= ask_price:
                 trade_size = max(size, ask_size)
                 self.make_trade(Direction.buy, ask_price, trade_size)
                 self.open_order = None
-        if direction == Direction.sell and quote.bid_size is not None:
-            bid_size = quote.bid_size
-            bid_price = quote.bid_price
+        if direction == Direction.sell and quote.get_bid_size() is not None:
+            bid_size = quote.get_bid_size()
+            bid_price = quote.get_bid_price()
             if price <= bid_price:
                 trade_size = max(bid_size, size)
                 self.make_trade(Direction.sell, bid_price, bid_size)
@@ -64,14 +64,14 @@ class Backtester:
     def backtest(self, strategy):
         for quote in self.quotes:
             strategy.register_quote(quote)
-            if strategy.wants_to_trade:
+            if strategy.wants_to_trade():
                 size = strategy.trade_size
                 price = strategy.trade_price
                 direction: Direction = strategy.direction
                 self.open_order = Open_order(size, price, direction)
             self.register_quote(quote)
         
-        
+
 
                     
 

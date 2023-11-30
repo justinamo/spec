@@ -108,6 +108,30 @@ class BBO:
 
     def is_trade(self):
         return self.type == BBO_Type.trade
+    
+    def get_mid_or_trade_price(self):
+        if self.type == BBO_Type.spread:
+            if self.ask_price is None:
+                return self.data.bid_price
+            elif self.data.bid_price is None:
+                return self.data.ask_price
+        elif self.type == BBO_Type.trade:
+            return self.data.price    
+    
+    def get_bid_price(self):
+        if self.type == BBO_Type.spread:
+            return self.data.bid_price
+        else:
+            raise("trying to get bid_price of Trade")
+
+    def get_ask_price(self):
+        if self.type == BBO_Type.spread:
+            return self.data.ask_price
+        else:
+            raise("trying to get ask_price of Trade")
+    
+    def get_time(self):
+        return self.data.time
 
     def of_string(string):
         fields = string.split()
