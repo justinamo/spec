@@ -1,5 +1,5 @@
 import blpapi
-from tick import Tick_types
+from tick_types import Tick_types
 from bbo import BBO
 
 tickData = blpapi.Name("tickData")

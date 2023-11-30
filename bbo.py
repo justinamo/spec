@@ -1,5 +1,6 @@
 from typing import Optional
 from tick import Tick, Tick_types
+from datetime import datetime
 
 class BBO_Type: 
     trade = "TRADE"
@@ -101,5 +102,40 @@ class BBO:
         
     def __repr__(self):
         return self.data.__repr__()
+
+    def is_spread(self):
+        return self.type == BBO_Type.spread
+
+    def is_trade(self):
+        return self.type == BBO_Type.trade
+
+    def of_string(string):
+        fields = string.split()
+        date = fields[0]
+        time = fields[1]
+        dt = datetime.fromisoformat(date + " " + time)
+        trade_or_bid = fields[2]
+        if trade_or_bid == Tick_types.trade:
+            # TODO: decouple string representations for spread and trade
+            #       and decouple BBO constructor from Tick
+            size = fields[3]
+            price = fields[4]
+            exchange = fields[5]
+            data = { "TRADE": Tick(dt, Tick_types.trade, price, size, exchange) }
+            return BBO(BBO_Type.trade, data)
+        else:
+            bid_exchange = fields[3]
+            bid_price = fields[4]
+            bid_size = fields[5]
+            ask_size = fields[6]
+            ask_price = fields[7]
+            ask_exchange = fields[8]
+            data = {
+                "BID": Tick(dt, Tick_types.bid, bid_price, bid_size, bid_exchange),
+                "ASK": Tick(dt, Tick_types.ask, ask_price, ask_size, ask_exchange)
+            }
+            return BBO(BBO_Type.spread, data)
+
+
         
         

@@ -1,4 +1,3 @@
-import blpapi
 from dates import convert_to_utc
 
 class IntradayTickRequest:

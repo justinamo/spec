@@ -1,10 +1,6 @@
 import blpapi
 from dates import convert_from_utc
-
-class Tick_types:
-    bid = "BID"
-    ask = "ASK"
-    trade = "TRADE"
+from tick_types import Tick_types
 
 class Tick:
     def __init__(self, time, tick_type, price, size, exchange):
