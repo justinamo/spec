@@ -110,13 +110,27 @@ class BBO:
         return self.type == BBO_Type.trade
     
     def get_mid_or_trade_price(self):
-        if self.type == BBO_Type.spread:
-            if self.ask_price is None:
-                return self.data.bid_price
-            elif self.data.bid_price is None:
-                return self.data.ask_price
-        elif self.type == BBO_Type.trade:
+        if self.is_spread():
+            if self.get_ask_price() == None:
+                return self.get_bid_price()
+            elif self.get_bid_price() == None:
+                return self.get_ask_price()
+            else:
+                return (self.get_ask_price() + self.get_bid_price()) / 2
+        elif self.is_trade():
             return self.data.price    
+    
+    def get_bid_size(self):
+        if self.type == BBO_Type.spread:
+            return self.data.bid_size
+        else:
+            raise("trying to get bid_size of Trade")
+
+    def get_ask_size(self):
+        if self.type == BBO_Type.spread:
+            return self.data.ask_size
+        else:
+            raise("trying to get ask_size of Trade")
     
     def get_bid_price(self):
         if self.type == BBO_Type.spread:
@@ -142,17 +156,17 @@ class BBO:
         if trade_or_bid == Tick_types.trade:
             # TODO: decouple string representations for spread and trade
             #       and decouple BBO constructor from Tick
-            size = fields[3]
-            price = fields[4]
+            size = int(fields[3])
+            price = float(fields[4])
             exchange = fields[5]
             data = { "TRADE": Tick(dt, Tick_types.trade, price, size, exchange) }
             return BBO(BBO_Type.trade, data)
         else:
             bid_exchange = fields[3]
-            bid_price = fields[4]
-            bid_size = fields[5]
-            ask_size = fields[6]
-            ask_price = fields[7]
+            bid_price = float(fields[4]) if fields[4] != "None" else None
+            bid_size = int(fields[5]) if fields[5] != "None" else None
+            ask_size = int(fields[6]) if fields[6] != "None" else None
+            ask_price = float(fields[7]) if fields[7] != "None" else None
             ask_exchange = fields[8]
             data = {
                 "BID": Tick(dt, Tick_types.bid, bid_price, bid_size, bid_exchange),

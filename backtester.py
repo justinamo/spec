@@ -1,5 +1,6 @@
 from bbo import BBO
 from direction import Direction
+import matplotlib.pyplot as plt
 
 def import_date(year, month, day):
     date_string = f"{year}-{month:02d}-{day:02d}"
@@ -8,7 +9,7 @@ def import_date(year, month, day):
     with open(path, "r", encoding="utf-8") as file:
         for line in file:
             qr.append(BBO.of_string(line.rstrip()))
-    return reversed(qr)  # data is in reverse chronological order
+    return list(reversed(qr))  # data is in reverse chronological order
 
 class Open_order:
     def __init__(self, size, price, direction):
@@ -23,6 +24,7 @@ class Backtester:
         self.position = 0
         self.equity = cash
         self.open_order = None
+        self.equity_over_time = []
     
     def make_trade(self, direction, price, size):
         if direction == Direction.buy:
@@ -35,6 +37,7 @@ class Backtester:
         
     def update_equity(self, price):
         self.equity = self.cash + self.position * price
+        self.equity_over_time.append(self.equity)
     
     def try_trade(self, quote):
         size = self.open_order.size
@@ -57,34 +60,28 @@ class Backtester:
 
     def register_quote(self, quote):
         if quote.is_trade():
-            self.update_equity(quote.price)
+            self.update_equity(quote.get_mid_or_trade_price())
         elif quote.is_spread() and self.open_order is not None:
             self.try_trade(quote)
                 
     def backtest(self, strategy):
-        for quote in self.quotes:
+        for i, quote in enumerate(self.quotes):
+            print(
+                    "loop progress:", f"{i / len(self.quotes) * 100:.2f}%", 
+                    "equity:", f"{self.equity:.2f}", 
+                    "position:", self.position, 
+                    "            ",
+                    end="\r"
+                    )
             strategy.register_quote(quote)
             if strategy.wants_to_trade():
                 size = strategy.trade_size
                 price = strategy.trade_price
-                direction: Direction = strategy.direction
+                direction: Direction = strategy.trade_direction
                 self.open_order = Open_order(size, price, direction)
             self.register_quote(quote)
+        plt.plot(self.equity_over_time)
+        plt.show()
+
         
-
-
-                    
-
-
-
-
-
-
-                
-
-
-     
-
-if __name__ == "__main__":
-    import_date(2023, 10, 2)
 
