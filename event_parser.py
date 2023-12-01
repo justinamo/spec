@@ -13,6 +13,8 @@ def extract_tick_data(session):
                 not_tick_data = False
                 td = message.asElement().getElement(tickData)
                 return td.getElement(tickData)
+            else:
+                print(message)
 
 def construct_qrm(ticks):
 
