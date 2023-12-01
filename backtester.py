@@ -1,5 +1,6 @@
 from bbo import BBO
 from direction import Direction
+from open_order import Open_order
 import matplotlib.pyplot as plt
 
 def import_date(year, month, day):
@@ -11,12 +12,6 @@ def import_date(year, month, day):
             qr.append(BBO.of_string(line.rstrip()))
     return list(reversed(qr))  # data is in reverse chronological order
 
-class Open_order:
-    def __init__(self, size, price, direction):
-        self.size = size
-        self.price = price
-        self.direction = direction
-
 class Backtester: 
     def __init__(self, quotes, cash):
         self.quotes = quotes
@@ -25,19 +20,21 @@ class Backtester:
         self.equity = cash
         self.open_order = None
         self.equity_over_time = []
+        self.times = []
     
-    def make_trade(self, direction, price, size):
+    def make_trade(self, direction, price, size, time):
         if direction == Direction.buy:
             self.cash -= size * price
             self.position += size
         elif direction == Direction.sell:
             self.cash += size * price
             self.position -= size
-        self.update_equity(price)
+        self.update_equity(price, time)
         
-    def update_equity(self, price):
+    def update_equity(self, price, time):
         self.equity = self.cash + self.position * price
         self.equity_over_time.append(self.equity)
+        self.times.append(time)
     
     def try_trade(self, quote):
         size = self.open_order.size
@@ -48,19 +45,19 @@ class Backtester:
             ask_price = quote.get_ask_price()
             if price >= ask_price:
                 trade_size = max(size, ask_size)
-                self.make_trade(Direction.buy, ask_price, trade_size)
+                self.make_trade(Direction.buy, ask_price, trade_size, quote.get_time())
                 self.open_order = None
         if direction == Direction.sell and quote.get_bid_size() is not None:
             bid_size = quote.get_bid_size()
             bid_price = quote.get_bid_price()
             if price <= bid_price:
                 trade_size = max(bid_size, size)
-                self.make_trade(Direction.sell, bid_price, bid_size)
+                self.make_trade(Direction.sell, bid_price, bid_size, quote.get_time())
                 self.open_order = None
 
     def register_quote(self, quote):
         if quote.is_trade():
-            self.update_equity(quote.get_mid_or_trade_price())
+            self.update_equity(quote.get_mid_or_trade_price(), quote.get_time())
         elif quote.is_spread() and self.open_order is not None:
             self.try_trade(quote)
                 
@@ -80,7 +77,7 @@ class Backtester:
                 direction: Direction = strategy.trade_direction
                 self.open_order = Open_order(size, price, direction)
             self.register_quote(quote)
-        plt.plot(self.equity_over_time)
+        plt.plot(self.times, self.equity_over_time)
         plt.show()
 
         
